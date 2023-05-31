@@ -1,21 +1,21 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { useHistory } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
-import Google from 'C:/Users/namkyun/Desktop/workspace/today/src/components/Google.jsx';
-import Facebook from 'C:/Users/namkyun/Desktop/workspace/today/src/components/Facebook.jsx';
-import axios from 'axios';
-
+import React, { useState } from "react";
+import styled from "styled-components";
+import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import Google from "../components/Google.jsx";
+import Facebook from "../components/Facebook.jsx";
+import axios from "axios";
 
 const Login = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isLogin, setIsLogin] = useState(false);
   const navigate = useNavigate();
   // const history = useHistory();
-
+  let sessionStorage = window.sessionStorage;
   const handleUsernameChange = (event) => {
-    setUsername(event.target.value);
+    setEmail(event.target.value);
   };
 
   const handlePasswordChange = (event) => {
@@ -26,23 +26,28 @@ const Login = () => {
     event.preventDefault();
 
     try {
-      const response = await axios.post('/api/login', {
-        username,
+      const response = await axios.post("http://localhost:3100/users/login", {
+        email,
         password,
+        withCredentials: true,
       });
 
-      if (response.data.success) {
-        console.log('로그인 성공!');
+      if (!sessionStorage) {
+        sessionStorage.setItem("loginId", email);
+        sessionStorage.setItem("loginPassword", password);
+        console.log("로그인 성공!");
+        setIsLogin(true);
         // 로그인 성공 후 처리할 로직 작성
-        navigate('/MyPage'); // 내 정보 페이지로 이동
+
+        navigate("/mypage"); // 내 정보 페이지로 이동
       } else {
         setErrorMessage(response.data.message);
+        alert("로그인 실패");
       }
     } catch (error) {
-      console.error('로그인 요청 실패:', error);
+      console.error("로그인 요청 실패:", error);
     }
   };
-
 
   return (
     <LoginContainer>
@@ -51,7 +56,7 @@ const Login = () => {
         <LoginInput
           type="text"
           placeholder="Email ID"
-          value={username}
+          value={email}
           onChange={handleUsernameChange}
           required
         />
@@ -63,10 +68,10 @@ const Login = () => {
           required
         />
         <>
-        <Google />
+          <Google />
         </>
         <>
-        <Facebook />
+          <Facebook />
         </>
         {/* <input
           type="checkbox"
@@ -78,7 +83,9 @@ const Login = () => {
         <label>
           <span>아이디 저장</span>
         </label> */}
-        <LoginButton type="submit">Login</LoginButton>
+        <LoginButton type="submit" onSubmit={handleSubmit}>
+          Login
+        </LoginButton>
         {errorMessage && <LoginErrorMessage>{errorMessage}</LoginErrorMessage>}
       </LoginForm>
     </LoginContainer>
@@ -140,27 +147,7 @@ const LoginErrorMessage = styled.p`
   font-size: 14px;
 `;
 
-
 export default Login;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // import React from 'react';
 // import styled from 'styled-components';
@@ -234,7 +221,6 @@ export default Login;
 //   font-weight: bold;
 // `;
 
-
 // export default Login;
 
 // function onClickGooglelogin() {
@@ -243,10 +229,6 @@ export default Login;
 
 // <button onClick={onClickGooglelogin}> Login </button>
 // //로그인 버튼 아직 미완성
-
-
-
-
 
 // import React, { useState } from 'react';
 // import styled from 'styled-components';
@@ -282,13 +264,6 @@ export default Login;
 
 // // ...이후 코드 생략...
 
-
-
-
-
-
-
-
 // import React, { useState } from 'react';
 // import styled from 'styled-components';
 // import { useHistory } from 'react-router-dom';
@@ -298,16 +273,12 @@ export default Login;
 
 // import axios from 'axios';
 
-
-
 // const Login = () => {
 //   const [username, setUsername] = useState('');
 //   const [password, setPassword] = useState('');
 //   const [errorMessage, setErrorMessage] = useState('');
 //   const navigate = useNavigate(); navigate('/ProfileLogin')
 //   const history = useHistory();
-
-
 
 //   const handleUsernameChange = (event) => {
 //     setUsername(event.target.value);
@@ -330,4 +301,3 @@ export default Login;
 //       setErrorMessage('유효하지 않은 사용자 이름 또는 비밀번호입니다.');
 //     }
 //   };
-
